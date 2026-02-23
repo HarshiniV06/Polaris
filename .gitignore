@@ -1,0 +1,33 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node dependencies
+node_modules/
+Webathon/**/node_modules/
+
+# Env files (secrets)
+.env
+.env.*
+Webathon/**/.env
+
+# Build outputs
+dist/
+build/
+Webathon/frontend/dist/
+
+# Coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
