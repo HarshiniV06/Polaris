@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
 function RepoSelectorPage() {
   const [repos, setRepos] = useState([]);
   const [user, setUser] = useState(null);
@@ -16,7 +18,7 @@ function RepoSelectorPage() {
       }
 
       try {
-        const response = await fetch("http://localhost:5000/auth/repos", {
+        const response = await fetch(`${API_BASE}/auth/repos`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

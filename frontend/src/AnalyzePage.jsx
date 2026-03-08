@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 
 function AnalyzePage() {
   const { setAnalysisData } = useAnalysis();
+  const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
   const [repoUrl, setRepoUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState(null);
@@ -59,7 +60,7 @@ function AnalyzePage() {
     setLocalAnalysisData(null);
 
     try {
-      const response = await fetch("http://localhost:5000/analyze", {
+      const response = await fetch(`${API_BASE}/analyze`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

@@ -1,6 +1,8 @@
 function LoginPage() {
+  const BACKEND = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
   const handleLogin = () => {
-    window.location.href = "http://localhost:5000/auth/github";
+    window.location.href = `${BACKEND}/auth/github`;
   };
 
   return (

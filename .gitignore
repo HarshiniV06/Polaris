@@ -31,3 +31,6 @@ coverage/
 # Temporary files
 *.tmp
 *.temp
+
+# Do not commit deployment notes
+DEPLOY.md
