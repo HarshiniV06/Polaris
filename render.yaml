@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: Polaris-backend
+    env: node
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    rootDir: backend
+    healthCheckPath: /

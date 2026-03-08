@@ -1,5 +1,5 @@
 import express from "express";
-import { analyzeRepo } from "../services/githubService.js";
+import { analyzeRepo } from "../services/githubservice.js";
 
 const router = express.Router();
 
