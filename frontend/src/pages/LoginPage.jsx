@@ -1,8 +1,15 @@
-function LoginPage() {
-  const BACKEND = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+import { API_BASE, isBackendConfigured } from "../config/api";
+import { navigate } from "../utils/navigate";
 
+function LoginPage() {
   const handleLogin = () => {
-    window.location.href = `${BACKEND}/auth/github`;
+    if (!isBackendConfigured) {
+      alert(
+        "Backend is not configured. Set VITE_BACKEND_URL in Vercel to your Render API URL, then redeploy."
+      );
+      return;
+    }
+    window.location.href = `${API_BASE}/auth/github`;
   };
 
   return (
@@ -60,6 +67,19 @@ function LoginPage() {
               }}>
                 Connect your GitHub account to analyze your repositories.
               </p>
+              {!isBackendConfigured && (
+                <p style={{
+                  color: "#f87171",
+                  fontSize: 14,
+                  margin: "0 0 24px",
+                  padding: "12px 16px",
+                  background: "rgba(248, 113, 113, 0.1)",
+                  borderRadius: 8,
+                  border: "1px solid rgba(248, 113, 113, 0.3)"
+                }}>
+                  Backend URL is missing. Deploy the API to Render, set <code>VITE_BACKEND_URL</code> in Vercel, then redeploy.
+                </p>
+              )}
               <button 
                 className="btn btn-primary btn-icon"
                 onClick={handleLogin}
@@ -90,10 +110,7 @@ function LoginPage() {
                 </p>
                 <button 
                   className="btn btn-secondary btn-icon"
-                  onClick={() => {
-                    window.history.pushState({}, "", "/analyze");
-                    window.location.reload();
-                  }}
+                  onClick={() => navigate("/analyze")}
                   style={{ 
                     width: "100%", 
                     justifyContent: "center",

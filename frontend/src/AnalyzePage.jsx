@@ -9,11 +9,11 @@ import BranchHealthSection from "./components/dashboard/BranchHealthSection";
 import TaskSyncSection from "./components/dashboard/TaskSyncSection";
 import DemoReadinessCard from "./components/dashboard/DemoReadinessCard";
 import ContributorBarChart from "./components/dashboard/ContributorBarChart";
-import { Link } from "react-router-dom";
+import { API_BASE, isBackendConfigured } from "./config/api";
+import { navigate } from "./utils/navigate";
 
 function AnalyzePage() {
   const { setAnalysisData } = useAnalysis();
-  const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
   const [repoUrl, setRepoUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState(null);
@@ -54,6 +54,11 @@ function AnalyzePage() {
 
   const handleAnalyzeAuto = async (url) => {
     if (!url) return;
+
+    if (!isBackendConfigured) {
+      setError("Backend is not configured. Set VITE_BACKEND_URL in Vercel and redeploy.");
+      return;
+    }
 
     setIsAnalyzing(true);
     setError(null);
@@ -162,8 +167,7 @@ function AnalyzePage() {
               <button
                 onClick={() => {
                   localStorage.removeItem("authToken");
-                  window.history.pushState({}, "", "/login");
-                  window.location.reload();
+                  navigate("/login");
                 }}
                 style={{
                   padding: "10px 20px",

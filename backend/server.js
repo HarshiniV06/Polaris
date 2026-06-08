@@ -64,9 +64,10 @@ app.use(
 app.use("/auth", authRoutes);
 app.use("/analyze", analyzeRoutes);
 
-/*
-Other routes below this
-*/
+// Health check for Render / uptime monitors
+app.get("/", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
 
 const PORT = process.env.PORT || 5000;
 

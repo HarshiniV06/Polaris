@@ -1,5 +1,6 @@
 import { useAnalysis } from "../context/AnalysisContext";
 import { useEffect, useState } from "react";
+import { navigate } from "../utils/navigate";
 
 function StandupPage() {
   const { analysisData, setAnalysisData } = useAnalysis();
@@ -110,8 +111,7 @@ function StandupPage() {
               <button
                 onClick={() => {
                   localStorage.removeItem("authToken");
-                  window.history.pushState({}, "", "/login");
-                  window.location.reload();
+                  navigate("/login");
                 }}
                 style={{
                   padding: "10px 20px",

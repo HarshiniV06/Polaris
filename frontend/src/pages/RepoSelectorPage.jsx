@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-
-const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+import { API_BASE, isBackendConfigured } from "../config/api";
+import { navigate } from "../utils/navigate";
 
 function RepoSelectorPage() {
   const [repos, setRepos] = useState([]);
@@ -13,7 +13,13 @@ function RepoSelectorPage() {
       const token = localStorage.getItem("authToken");
 
       if (!token) {
-        window.location.href = "/login";
+        navigate("/login");
+        return;
+      }
+
+      if (!isBackendConfigured) {
+        setError("Backend is not configured. Set VITE_BACKEND_URL in Vercel and redeploy.");
+        setLoading(false);
         return;
       }
 

@@ -1,3 +1,5 @@
+import { navigate } from "./utils/navigate";
+
 function App() {
   const isLoggedIn = localStorage.getItem("authToken");
 
@@ -40,8 +42,7 @@ function App() {
                   <a href="/standup" className="landing-nav-link" style={{ textDecoration: 'none', fontSize: 15, fontWeight: 500 }}>Stand-Up</a>
                   <button className="landing-top-cta" onClick={() => {
                     localStorage.removeItem("authToken");
-                    window.history.pushState({}, "", "/login");
-                    window.location.reload();
+                    navigate("/login");
                   }} style={{ 
                     padding: "10px 20px",
                     borderRadius: 10,
