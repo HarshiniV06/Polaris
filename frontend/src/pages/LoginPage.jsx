@@ -9,7 +9,8 @@ function LoginPage() {
       );
       return;
     }
-    window.location.href = `${API_BASE}/auth/github`;
+    const frontendUrl = encodeURIComponent(window.location.origin);
+    window.location.href = `${API_BASE}/auth/github?frontend_url=${frontendUrl}`;
   };
 
   return (

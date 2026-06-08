@@ -5,6 +5,7 @@ import cors from "cors";
 
 import authRoutes from "./Routes/authRoutes.js";
 import analyzeRoutes from "./Routes/analyze.js";
+import { isAllowedOrigin, getAllowedOrigins } from "./utils/allowedOrigins.js";
 
 dotenv.config();
 
@@ -52,20 +53,17 @@ app.post(
 
 app.use(express.json());
 
-// Enable CORS — FRONTEND_URL can be a comma-separated list of allowed origins
-const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:5173")
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-
+// Enable CORS — allows FRONTEND_URL, localhost, and *.vercel.app
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
       } else {
-        console.warn(`CORS blocked origin: ${origin}. Allowed: ${allowedOrigins.join(", ")}`);
-        callback(new Error("Not allowed by CORS"));
+        console.warn(
+          `CORS blocked origin: ${origin}. Configured: ${getAllowedOrigins().join(", ")}`
+        );
+        callback(null, false);
       }
     },
     credentials: true

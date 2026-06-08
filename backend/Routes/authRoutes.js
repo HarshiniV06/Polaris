@@ -2,24 +2,49 @@ import express from "express";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import { authenticate } from "../middleware/authMiddleware.js";
+import { isAllowedOrigin } from "../utils/allowedOrigins.js";
 
 const router = express.Router();
 
 const tokenStore = new Map(); // userId -> GitHub access token
 
+function resolveFrontendUrl(candidate) {
+  if (candidate && isAllowedOrigin(candidate)) {
+    return candidate.replace(/\/$/, "");
+  }
+  return (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
+}
+
+function encodeOAuthState(frontendUrl) {
+  return Buffer.from(JSON.stringify({ frontendUrl })).toString("base64url");
+}
+
+function decodeOAuthState(state) {
+  if (!state) return null;
+  try {
+    return JSON.parse(Buffer.from(state, "base64url").toString());
+  } catch {
+    return null;
+  }
+}
+
 // Step 1: Redirect to GitHub
 router.get("/github", (req, res) => {
+  const frontendUrl = resolveFrontendUrl(req.query.frontend_url);
+  const state = encodeOAuthState(frontendUrl);
+
   const redirectUrl =
     `https://github.com/login/oauth/authorize` +
     `?client_id=${process.env.GITHUB_CLIENT_ID}` +
-    `&scope=repo user`;
+    `&scope=repo user` +
+    `&state=${state}`;
 
   res.redirect(redirectUrl);
 });
 
 // Step 2: GitHub Callback
 router.get("/github/callback", async (req, res) => {
-  const { code } = req.query;
+  const { code, state } = req.query;
 
   try {
     const tokenResponse = await axios.post(
@@ -60,7 +85,8 @@ router.get("/github/callback", async (req, res) => {
 
     tokenStore.set(user.id, accessToken);
 
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const oauthState = decodeOAuthState(state);
+    const frontendUrl = resolveFrontendUrl(oauthState?.frontendUrl);
 
     res.redirect(`${frontendUrl}/auth/success?token=${jwtToken}`);
   } catch (error) {

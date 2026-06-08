@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { navigate } from "../utils/navigate";
 
 function AuthSuccess() {
   useEffect(() => {
@@ -7,11 +8,9 @@ function AuthSuccess() {
 
     if (token) {
       localStorage.setItem("authToken", token);
-      setTimeout(() => {
-        window.location.href = "/repos";
-      }, 500);
+      setTimeout(() => navigate("/repos"), 300);
     } else {
-      window.location.href = "/login";
+      navigate("/login");
     }
   }, []);
 
