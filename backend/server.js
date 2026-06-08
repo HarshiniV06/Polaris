@@ -52,10 +52,22 @@ app.post(
 
 app.use(express.json());
 
-// Enable CORS for frontend dev server (adjust FRONTEND_URL in .env if needed)
+// Enable CORS — FRONTEND_URL can be a comma-separated list of allowed origins
+const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.warn(`CORS blocked origin: ${origin}. Allowed: ${allowedOrigins.join(", ")}`);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true
   })
 );
@@ -65,7 +77,12 @@ app.use("/auth", authRoutes);
 app.use("/analyze", analyzeRoutes);
 
 // Health check for Render / uptime monitors
-app.get("/", (_req, res) => {
+// Also handles GitHub OAuth when callback URL is set to the service root
+app.get("/", (req, res) => {
+  if (req.query.code) {
+    const query = new URLSearchParams(req.query).toString();
+    return res.redirect(`/auth/github/callback?${query}`);
+  }
   res.status(200).json({ status: "ok" });
 });
 

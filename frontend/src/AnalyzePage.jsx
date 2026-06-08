@@ -73,11 +73,11 @@ function AnalyzePage() {
         body: JSON.stringify({ repoUrl: url })
       });
 
-      if (!response.ok) {
-        throw new Error("Server error");
-      }
-
       const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Server error");
+      }
       setLocalAnalysisData(result);
       setAnalysisData(result);
       
@@ -86,7 +86,11 @@ function AnalyzePage() {
       sessionStorage.setItem("analysisRepoUrl", url);
     } catch (err) {
       console.error(err);
-      setError("Unable to analyze repository.");
+      setError(
+        err.message === "Failed to fetch"
+          ? "Cannot reach the backend. Check VITE_BACKEND_URL in Vercel and FRONTEND_URL in Render, then redeploy both."
+          : err.message || "Unable to analyze repository."
+      );
     } finally {
       setIsAnalyzing(false);
     }
