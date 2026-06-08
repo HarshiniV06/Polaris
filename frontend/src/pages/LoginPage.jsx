@@ -2,6 +2,8 @@ import { API_BASE, isBackendConfigured } from "../config/api";
 import { navigate } from "../utils/navigate";
 
 function LoginPage() {
+  const frontendUrl = encodeURIComponent(window.location.origin);
+
   const handleLogin = () => {
     if (!isBackendConfigured) {
       alert(
@@ -9,8 +11,12 @@ function LoginPage() {
       );
       return;
     }
-    const frontendUrl = encodeURIComponent(window.location.origin);
     window.location.href = `${API_BASE}/auth/github?frontend_url=${frontendUrl}`;
+  };
+
+  const handleSwitchAccount = () => {
+    if (!isBackendConfigured) return;
+    window.location.href = `${API_BASE}/auth/github/switch?frontend_url=${frontendUrl}`;
   };
 
   return (
@@ -92,10 +98,35 @@ function LoginPage() {
                 color: "var(--text-tertiary)",
                 fontSize: 12,
                 marginTop: 16,
-                marginBottom: 24
+                marginBottom: 8
               }}>
                 We'll never post to your account or store your password.
               </p>
+              <p style={{
+                color: "var(--text-tertiary)",
+                fontSize: 12,
+                marginTop: 0,
+                marginBottom: 8,
+                lineHeight: 1.5
+              }}>
+                If you're already signed into GitHub in this browser, GitHub will sign you in automatically — that's normal OAuth behavior, not a Polaris bug.
+              </p>
+              <button
+                type="button"
+                onClick={handleSwitchAccount}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--text-secondary)",
+                  fontSize: 13,
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  marginBottom: 24,
+                  padding: 0
+                }}
+              >
+                Use a different GitHub account
+              </button>
               
               <div style={{ 
                 borderTop: "1px solid var(--border-glass)",

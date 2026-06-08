@@ -28,18 +28,28 @@ function decodeOAuthState(state) {
   }
 }
 
-// Step 1: Redirect to GitHub
-router.get("/github", (req, res) => {
-  const frontendUrl = resolveFrontendUrl(req.query.frontend_url);
+function buildAuthorizeUrl(frontendUrl) {
   const state = encodeOAuthState(frontendUrl);
-
-  const redirectUrl =
+  return (
     `https://github.com/login/oauth/authorize` +
     `?client_id=${process.env.GITHUB_CLIENT_ID}` +
     `&scope=repo user` +
-    `&state=${state}`;
+    `&state=${state}`
+  );
+}
 
-  res.redirect(redirectUrl);
+// Sign out of GitHub in the browser, then return to Polaris login
+router.get("/github/switch", (req, res) => {
+  const frontendUrl = resolveFrontendUrl(req.query.frontend_url);
+  const loginUrl = `${frontendUrl}/login`;
+  const returnTo = encodeURIComponent(loginUrl);
+  res.redirect(`https://github.com/logout?return_to=${returnTo}`);
+});
+
+// Step 1: Redirect to GitHub
+router.get("/github", (req, res) => {
+  const frontendUrl = resolveFrontendUrl(req.query.frontend_url);
+  res.redirect(buildAuthorizeUrl(frontendUrl));
 });
 
 // Step 2: GitHub Callback
