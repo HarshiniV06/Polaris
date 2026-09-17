@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const getHeaders = () => ({
-  Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+  ...(process.env.GITHUB_TOKEN
+    ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
+    : {}),
   Accept: "application/vnd.github+json"
 });
 

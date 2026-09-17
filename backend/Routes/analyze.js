@@ -5,12 +5,6 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    if (!process.env.GITHUB_TOKEN) {
-      return res.status(500).json({
-        error: "GITHUB_TOKEN is not configured on the server. Add it in Render environment variables."
-      });
-    }
-
     const { repoUrl } = req.body;
 
     if (!repoUrl || !repoUrl.includes("github.com")) {
@@ -26,7 +20,7 @@ router.post("/", async (req, res) => {
       error.response?.status === 404
         ? "Repository not found. Check the URL is correct and public."
         : error.response?.status === 401 || error.response?.status === 403
-          ? "GitHub API access denied. Check GITHUB_TOKEN on Render has repo scope."
+          ? "GitHub API access denied. For private repositories, check that GITHUB_TOKEN on Render is valid and has repository access."
           : error.message || "Analysis failed";
     res.status(500).json({ error: message });
   }
